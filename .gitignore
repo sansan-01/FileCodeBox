@@ -12,6 +12,8 @@ database.db
 # C extensions
 *.so
 *.env
+.env.*
+!.env.example
 # Distribution / packaging
 .Python
 build/

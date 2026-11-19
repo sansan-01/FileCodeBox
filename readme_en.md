@@ -238,6 +238,8 @@ pip install -r requirements.txt
 
 3. Start the service
 
+   Before the first launch from this checkout, set and export `FILECODEBOX_ADMIN_TOKEN`. See `.env.example` for the variable format.
+
 ```bash
 python main.py
 ```

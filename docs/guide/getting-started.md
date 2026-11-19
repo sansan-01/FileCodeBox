@@ -35,6 +35,9 @@ pip install -r requirements.txt
 ```
 
 3. 启动服务
+
+   从本仓库首次启动前，设置并导出 `FILECODEBOX_ADMIN_TOKEN`。变量格式见 `.env.example`。
+
 ```bash
 python main.py
 ```
@@ -57,7 +60,7 @@ python main.py
 
 4. 后台管理
    - 访问 `http://localhost:12345/#/admin`
-   - 输入管理员密码：`FileCodeBox2023`
+   - 输入部署时设置的管理员密码
    - 进入后台管理页面
    - 查看系统信息、文件列表、用户管理等
 

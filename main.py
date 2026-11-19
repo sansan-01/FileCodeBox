@@ -4,6 +4,7 @@
 # @Software: PyCharm
 import asyncio
 import time
+from os import getenv
 
 from fastapi import FastAPI
 
@@ -32,33 +33,42 @@ async def lifespan(app: FastAPI):
     # 初始化数据库
     await init_db()
 
-    # 加载配置
-    await load_config()
-    app.mount(
-        "/assets",
-        StaticFiles(directory=f"./{settings.themesSelect}/assets"),
-        name="assets",
-    )
-
-    # 启动后台任务
-    task = asyncio.create_task(delete_expire_files())
-    logger.info("应用初始化完成")
-
+    task = None
     try:
+        # 加载配置
+        await load_config()
+        app.mount(
+            "/assets",
+            StaticFiles(directory=f"./{settings.themesSelect}/assets"),
+            name="assets",
+        )
+
+        # 启动后台任务
+        task = asyncio.create_task(delete_expire_files())
+        logger.info("应用初始化完成")
         yield
     finally:
         # 清理操作
         logger.info("正在关闭应用...")
-        task.cancel()
-        await asyncio.gather(task, return_exceptions=True)
+        if task is not None:
+            task.cancel()
+            await asyncio.gather(task, return_exceptions=True)
         await Tortoise.close_connections()
         logger.info("应用已关闭")
 
 
 async def load_config():
+    admin_token = getenv("FILECODEBOX_ADMIN_TOKEN", "")
     user_config, _ = await KeyValue.get_or_create(
-        key="settings", defaults={"value": DEFAULT_CONFIG}
+        key="settings",
+        defaults={"value": {**DEFAULT_CONFIG, "admin_token": admin_token}},
     )
+    if admin_token and admin_token != user_config.value.get("admin_token"):
+        user_config.value["admin_token"] = admin_token
+        await user_config.save(update_fields=["value"])
+    if not user_config.value.get("admin_token"):
+        raise RuntimeError("Set FILECODEBOX_ADMIN_TOKEN before starting FileCodeBox.")
+
     await KeyValue.update_or_create(
         key="sys_start", defaults={"value": int(time.time() * 1000)}
     )

@@ -35,6 +35,9 @@ pip install -r requirements.txt
 ```
 
 3. Start the service
+
+   Before the first launch from this checkout, set and export `FILECODEBOX_ADMIN_TOKEN`. See `.env.example` for the variable format.
+
 ```bash
 python main.py
 ```
@@ -56,7 +59,7 @@ python main.py
 
 4. Admin Panel
    - Visit `http://localhost:12345/#/admin`
-   - Enter admin password: `FileCodeBox2023`
+   - Enter the administrator password configured for your deployment
    - Enter admin panel
    - View system information, file list, user management, etc.
 
